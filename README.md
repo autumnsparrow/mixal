@@ -12,4 +12,4 @@ AOC mixal language based on gnu mdk
 
 ###3. Date of Easter
 
-[date of easter] (./docs/date_of_easter.md)
+[date of easter](./docs/date_of_easter.md)
