@@ -4,15 +4,15 @@
 *
 *
 *
-SS	EQU	23	define the martrix size ,that n is odd
+SS	EQU	3	;define the martrix size ,that n is odd
 SQ	CON	0	; start of the martrix in memory
 	ORIG	*+SS*SS	; offset the memory location to save table of data
 W	CON	SS	; the width of the martrix
 CENTER	CON	SS/2	; the center of the martrix
 N	CON	SS*SS	; the size of the martrix
 IDX	CON	0	; the offset of martrix in the one dimsion
-MSG	ALF	1	; the msg to output
-	ORIG	*+SS	; the end of msg
+MSG	ALF	1
+	ORIG	*+24
 	ORIG	3000	; the start of the code
 INDEX	STJ	9F	; find the index of the martrix by rI1 = i ,rI2 = j
 	ENTA	0	; the size of the index continue increase , with
@@ -46,19 +46,19 @@ SHOW	STJ	9F	; show the SQUARE in the decimal number.
 	INC1	1		 
 	INC2	1
 	CMP2	W
-	JL	1B+1		; jump of the inner 
+	JL	1B+1	; jump of the inner 
 	OUT	MSG(19)
-	CMP1	N		; compare the offset iI1 < N*N
+	CMP1	N	; compare the offset iI1 < N*N
 	JL	1B
 9H	JMP	*
-START	ENT6	1		; start iI6 as numbers
-	LD1	CENTER		; iI1 = i , iI2 = j
+START	ENT6	1	; start iI6 as numbers
+	LD1	CENTER	; iI1 = i , iI2 = j
 	LD2	CENTER		
 	INC1	1		; the first position is i+1
 	JMP	INDEX
-	LD5	IDX		; find offset the martirx
-	ST6	0,5		; store the 1st into the memory
-1H	INC1	1		; normal increase i+1,j+1
+	LD5	IDX	; find offset the martirx
+	ST6	0,5	; store the 1st into the memory
+1H	INC1	1	; normal increase i+1,j+1
 	INC2	1
 	INC6	1
 	JMP	INDEX
