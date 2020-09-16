@@ -1,0 +1,195 @@
+*
+*
+* date of easter
+*
+G	CON	0
+C	CON	0
+X	CON	0
+Z	CON	0
+D	CON	0
+E	CON	0
+N	CON	0
+T	CON	0	T = (D+N) mod 7
+DAY	CON	0	day 
+MONTH	CON	0	month
+YYYY	CON	0	year
+MSG	ALF	dd   
+	ALF	mm   
+	ALF	yyy 
+	ORIG	3000
+*
+*
+* subroutine e1	g = (YYYY mod 19 ) +1
+*
+*
+E1	STJ	9F
+	ENTA	0
+	ENTX	0
+	LDX	YYYY
+	DIV	=19=
+	SLAX	5
+	ADD	=1=
+	STA	G
+9H	JMP	*
+*
+* 
+*
+*	sub routine c = (YYYY/100)+1
+*
+E2	STJ	9F
+	ENTA	0
+	ENTX	0
+	LDX	YYYY
+	DIV	=100=
+	ADD	=1=
+	STA	C
+9H	JMP	*
+*
+*	corrections	E3
+*	x = (3*c/4)-12
+* 	z = ((8*c+5)/25)-5
+*
+E3	STJ	9F
+*	caculate X
+	LDA	=3=
+	MUL	C
+	DIV	=4=
+	SUB	=12=
+	STA	X
+*	calcuate Z
+	LDA	=8=
+	MUL	C
+	SLAX	5
+	ADD	=5=
+	SRAX	5
+	DIV	=25=
+	SUB	=5=
+	STA	Z
+9H	JMP	*
+*
+*	Find Sunday E4
+*	d = (5*y/4)-X-10
+*
+E4	STJ	9F
+	LDA	=5=
+	MUL	YYYY
+	DIV	=4=
+	SUB	X
+	SUB	=10=
+	STA	D
+9H	JMP	*
+*
+*	Epac E5
+*
+*	E = (11*G+20+Z-X) mod 30
+*	if (E==25&&G>11) or (e==25)  E=E+1
+*
+E5	STJ	9F
+	LDA	=11=
+	MUL	G
+	SLAX	5
+	ADD	=20=
+	ADD	Z
+	SUB	X
+	SRAX	5
+	DIV	=30=
+	STX	E
+	DECX	24
+	JXZ	1F
+	DECX	1
+	JXZ	2F
+	JMP	9F
+1H	LDA	=1=
+	ADD	E
+	STA	E
+	JMP	9F
+2H	LDA	G
+	SUB	11
+	JAP	1B
+9H	JMP	*
+*
+*	E6	find full moon
+*
+E6	STJ	9F
+	LDA	=44=
+	SUB	E
+	STA	N
+	CMPA	=21=
+	JL	1F	N<21 ,then N=N+30
+	JMP	9F
+1H	ADD	=30=
+	STA	N
+9H	JMP	*
+*
+*	Advance to Sunday
+*	N = N+7  - ((D+N) mod 7)
+*
+E7	STJ	9F
+	LDA	D
+	ADD	N
+	SRAX	5
+	DIV	=7=
+	STX	T
+	LDA	=7=
+	ADD	N
+	SUB	T
+	STA	N
+9H	JMP	*
+
+*
+*	E8 Get month
+* 	if (N>31)	N-31 Arpil
+*	else N March
+
+E8	STJ	9F
+	LDA	 N
+	CMPA	=31=
+	JG	1F
+	STA	DAY
+	ENTA	3
+	STA	MONTH
+	JMP	9F
+1H	SUB	=31=
+	STA	DAY
+	ENTA	4
+	STA	MONTH
+9H	JMP 	*
+*
+*	print dd  mm yyyy
+*
+E9	STJ	9F
+	ENTA	0
+	LDA	DAY
+	CHAR
+	STX	MSG(1:2)
+	ENTX	0
+	LDA	MONTH
+	CHAR
+	STX	MSG+1(1:2)
+	ENTX	0
+	LDA	YYYY
+	CHAR
+	STX	MSG+2(1:4)
+	OUT	MSG(19)
+9H	JMP	*
+*
+* entrypoint of main function.s
+*
+START	LD3	=1950=
+LOOP	ST3	YYYY
+	JMP	E1
+	JMP	E2
+	JMP	E3
+	JMP	E4
+	JMP	E5
+	JMP	E6
+	JMP	E7
+	JMP	E8
+	JMP	E9
+	INC3	1
+	CMP3	=2050=
+	JLE	LOOP
+	HLT
+	END	START
+
+

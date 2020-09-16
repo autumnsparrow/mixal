@@ -1,0 +1,77 @@
+*
+*
+* magic square
+*
+*
+*
+SS	EQU	23	define the martrix size ,that n is odd
+SQ	CON	0	; start of the martrix in memory
+	ORIG	*+SS*SS	; offset the memory location to save table of data
+W	CON	SS	; the width of the martrix
+CENTER	CON	SS/2	; the center of the martrix
+N	CON	SS*SS	; the size of the martrix
+IDX	CON	0	; the offset of martrix in the one dimsion
+MSG	ALF	1	; the msg to output
+	ORIG	*+SS	; the end of msg
+	ORIG	3000	; the start of the code
+INDEX	STJ	9F	; find the index of the martrix by rI1 = i ,rI2 = j
+	ENTA	0	; the size of the index continue increase , with
+	ENTX	0,1	; with the reminder of the width of matrix the the 
+	DIV	W	; the postion within the martirx.
+	SLAX	5	
+	MUL	W
+	STX	IDX	; the rI1*W
+	ENTA	0
+	ENTX	0,2
+	DIV	W
+	SLAX	5	; the offset = rI1*W+rI2
+	ADD	IDX	; the offset of the martrix
+	STA	IDX
+9H	JMP	*
+L	STJ	9F	; log the index of the offset
+	LDA	IDX
+	CHAR
+	STX	MSG
+	OUT	MSG(19)
+9H	JMP	*
+SHOW	STJ	9F	; show the SQUARE in the decimal number.
+	ENT1	0	
+1H	ENT2	0	; inner loop
+	ENTX	0
+	LDA	SQ,1
+	CHAR
+	ENT3	0
+	ST3	MSG,2(0:1)	; space in the first byte of MSG
+	STX	MSG,2(2:5)	; 04d to express the decimal
+	INC1	1		 
+	INC2	1
+	CMP2	W
+	JL	1B+1		; jump of the inner 
+	OUT	MSG(19)
+	CMP1	N		; compare the offset iI1 < N*N
+	JL	1B
+9H	JMP	*
+START	ENT6	1		; start iI6 as numbers
+	LD1	CENTER		; iI1 = i , iI2 = j
+	LD2	CENTER		
+	INC1	1		; the first position is i+1
+	JMP	INDEX
+	LD5	IDX		; find offset the martirx
+	ST6	0,5		; store the 1st into the memory
+1H	INC1	1		; normal increase i+1,j+1
+	INC2	1
+	INC6	1
+	JMP	INDEX
+	LD5	IDX
+	LDA	SQ,5		; test if the cell can place rI6
+	JAZ	2F		; can put the number
+	INC1	1		; can not put the number , just i+2,j
+	DEC2	1
+	JMP	INDEX		; find the offset
+	LD5	IDX		; 
+2H	ST6	SQ,5		; store the number.
+	CMP6	N		; if the number small than the N*N,then loop
+	JL	1B
+	JMP	SHOW		; show the result of the matrix
+	HLT
+	END	START
